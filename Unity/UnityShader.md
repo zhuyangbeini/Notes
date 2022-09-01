@@ -1,5 +1,7 @@
 # Shader常用代码
 
+## 法线相关
+
 ### 法线从切线转世界
 
 ```csharp
@@ -13,7 +15,42 @@ float3x3 tangentToWorld = float3x3(worldTangent.x,worldBitangent.x,worldNormal.x
 float3 tangentToWorldDir = mul( tangentToWorld, normalTex );
 ```
 
+### TANGENT_SPACE_ROTATION
+
+```csharp
+//TANGENT_SPACE_ROTATION
+float3 binormal = cross( normalize(v.normal), normalize(v.tangent.xyz) ) * v.tangent.w; 
+float3x3 rotation = float3x3( v.tangent.xyz, binormal, v.normal )
+```
+
+高度图转法线
+
+```csharp
+fixed4 frag (v2f i) : SV_Target
+{
+	float2 uvx0 = i.uv - float2(_MainTex_TexelSize.x, 0) * 0.5;
+	float2 uvx1 = i.uv + float2(_MainTex_TexelSize.x, 0) * 0.5;
+	float2 uvy0 = i.uv - float2(0, _MainTex_TexelSize.y) * 0.5;
+	float2 uvy1 = i.uv + float2(0, _MainTex_TexelSize.y) * 0.5;
+	float3 dx = float3(_MainTex_TexelSize.x,
+		0,
+		(1 - tex2D(_MainTex, uvx1).r) - (1 - tex2D(_MainTex, uvx0).r));
+	float3 dy = float3(0,
+		_MainTex_TexelSize.y,
+		(1 - tex2D(_MainTex, uvy1).r) - (1 - tex2D(_MainTex, uvy0).r));
+	float3 n = cross(dx, dy);
+	n.z *= 10;//这里可以控制法线收束于z轴的程度
+	float3 normal = normalize(n);
+	normal = normal * 0.5 + 0.5;	
+    return float4(normal, 1);
+}
+```
+
+
+
 ****
+
+## 透明相关
 
 ### 半透明混合
 
@@ -30,7 +67,7 @@ clip会丢弃小于0的片元
 
 ****
 
-### include文件
+## include文件
 
 ```csharp
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -39,7 +76,7 @@ clip会丢弃小于0的片元
 
 ****
 
-### 属性面板相关
+## 属性面板相关
 
 #### 定义
 
@@ -68,7 +105,7 @@ _Name("标签名",2d) = "white"{}
 
 ---
 
-### 深度相关
+## 深度相关
 
 > 摄像机远近
 
@@ -118,7 +155,7 @@ float distanceDepth = 1.0 - saturate( abs( ( screenDepth - LinearEyeDepth( scree
 
 ---
 
-### GPU Instance
+## GPU Instance
 
 > shader部分：
 
@@ -200,7 +237,7 @@ public class MeshBall : MonoBehaviour
 }
 ```
 
-### 贴图采样
+## 贴图采样
 
 > 在 vertexshader 中采样贴图：
 
@@ -215,11 +252,7 @@ half3 reflectVector = reflect(-viewDirWS,reflectNormal);
 half3 refcol = GlossyEnvironmentReflection(reflectVector,0.1,1);
 ```
 
-
-
-
-
-### 常用函数解读：
+## 常用函数解读：
 
 #### Lerp
 
