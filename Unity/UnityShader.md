@@ -28,25 +28,23 @@ float3x3 rotation = float3x3( v.tangent.xyz, binormal, v.normal )
 ```csharp
 fixed4 frag (v2f i) : SV_Target
 {
-	float2 uvx0 = i.uv - float2(_MainTex_TexelSize.x, 0) * 0.5;
-	float2 uvx1 = i.uv + float2(_MainTex_TexelSize.x, 0) * 0.5;
-	float2 uvy0 = i.uv - float2(0, _MainTex_TexelSize.y) * 0.5;
-	float2 uvy1 = i.uv + float2(0, _MainTex_TexelSize.y) * 0.5;
-	float3 dx = float3(_MainTex_TexelSize.x,
-		0,
-		(1 - tex2D(_MainTex, uvx1).r) - (1 - tex2D(_MainTex, uvx0).r));
-	float3 dy = float3(0,
-		_MainTex_TexelSize.y,
-		(1 - tex2D(_MainTex, uvy1).r) - (1 - tex2D(_MainTex, uvy0).r));
-	float3 n = cross(dx, dy);
-	n.z *= 10;//这里可以控制法线收束于z轴的程度
-	float3 normal = normalize(n);
-	normal = normal * 0.5 + 0.5;	
+    float2 uvx0 = i.uv - float2(_MainTex_TexelSize.x, 0) * 0.5;
+    float2 uvx1 = i.uv + float2(_MainTex_TexelSize.x, 0) * 0.5;
+    float2 uvy0 = i.uv - float2(0, _MainTex_TexelSize.y) * 0.5;
+    float2 uvy1 = i.uv + float2(0, _MainTex_TexelSize.y) * 0.5;
+    float3 dx = float3(_MainTex_TexelSize.x,
+        0,
+        (1 - tex2D(_MainTex, uvx1).r) - (1 - tex2D(_MainTex, uvx0).r));
+    float3 dy = float3(0,
+        _MainTex_TexelSize.y,
+        (1 - tex2D(_MainTex, uvy1).r) - (1 - tex2D(_MainTex, uvy0).r));
+    float3 n = cross(dx, dy);
+    n.z *= 10;//这里可以控制法线收束于z轴的程度
+    float3 normal = normalize(n);
+    normal = normal * 0.5 + 0.5;    
     return float4(normal, 1);
 }
 ```
-
-
 
 ****
 

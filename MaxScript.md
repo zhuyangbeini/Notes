@@ -14,6 +14,30 @@ mat = matrix3 1    --> 生成一个ident的3**4矩阵，其中3* *3是旋转，�
 
 ***
 
+### 选择：
+
+$ == selection 
+
+区别：
+
+    1. 没有选择任何物体时，\$为undefined，没法使用.count等函数，seletion.count可以正确输出0
+
+    2. 只选中一个物体时，$即为这个物体，但seletion仍返回一个数组，要访问该物体属性，必须 selection[1].name
+
+selection -- 当前选中的物体，返回一个数组
+
+selection.count -- 选中物体的个数
+
+select -- 选中某个指定类型物体（objects/geometry/lights等）
+
+deselect -- 取消选择某个指定类型物体
+
+---
+
+### 
+
+****
+
 ### 文件引用：
 
 `filein "UserNormalTranslator.ms"`
@@ -30,6 +54,10 @@ for i = 1 to 20 do --从1遍历到20，一般用于遍历numfaces（总面数）
 
 ```maxscript
 for i in array do --类似foreach，遍历数组中的元素
+```
+
+```maxscript
+a = for i in array where (condition == ture) collect i
 ```
 
 ***
@@ -56,9 +84,89 @@ if true then () else ()
 
 `format "some string % \n" value`  % 与value 成对使用 ，value会自动填充到string中对应的%中
 
+##### 属性：
 
+classof -- 物体属于哪个类
+
+showproperties -- 显示物体有哪些属性
+
+    注意这里只会显示该类的属性，不会显示继承自父类的属性
+
+getpropnames class -- 显示这个类的属性名
+
+showmethods -- 显示所有方法
+
+showevents -- 显示事件
 
 ***
+
+# API使用指南：
+
+## SkinOps
+
+### 语法格式：
+
+<Skin> --> 当前选中的skin modify
+
+<vertex_integer> --> 顶点index
+
+<vertex_bone_integer> --> 骨骼的index（并非list index）
+
+<nameflag_index> --> 0返回带有transform node 的名字，1返回ui list里的名字
+
+---
+
+### Get
+
+#### skin修改器
+
+     SkinMod = $.modifiers[#Skin]
+
+#### 骨骼名称 - GetBoneName
+
+    *skinOps.GetBoneName* <Skin> <bone_index> <nameflag_index>
+
+#### 选中骨骼的名称 - GetSelectedBone
+
+    *skinOps.GetSelectedBone* <Skin>
+
+#### 蒙皮总点数 - GetNumberVertices
+
+    *skinOps.GetNumberVertices* <Skin>
+
+#### 总骨骼数 - GetNumberBones
+
+    *skinOps.GetNumberBones* <Skin>
+
+#### 顶点上的骨骼的ID - GetVertexWeightBoneID
+
+    *skinOps.GetVertexWeightBoneID* <Skin> <vertex_integer> <vertex_bone_integer>
+
+    这里的<vertex_bone_integer>是顶点上几个骨头的序号，比如该顶点由三根骨骼控制，则这里的id是123，
+
+    返回的id是这根骨骼在 ui list 里的index
+
+#### 顶点上有共有几根骨骼控制 - GetVertexWeightCount
+
+    *skinOps.GetVertexWeightCount* <Skin> <vertex_integer>
+
+#### 顶点上指定骨骼的权重值 -GetVertexWeight
+
+    *skinOps.GetVertexWeight* <Skin> <vertex_integer> <vertex_bone_integer>
+
+    这里的<vertex_bone_integer>是顶点上几个骨头的序号
+
+---
+
+### Set
+
+#### 设置顶点权重 - SetVertexWeights
+
+    *skinOps.SetVertexWeights* <Skin> <vertex_integer> \ ( <vertex_bone_integer> | <vertex_bone_array> ) \ ( <weight_float> | <weight_array> )
+
+   skinOps.SetVertexWeights <SkinMod> <VertxId> <BoneId> <WeightValue>
+
+---
 
 # 代码示例：
 
